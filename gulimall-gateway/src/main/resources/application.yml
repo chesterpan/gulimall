@@ -1,0 +1,26 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: baidu-route
+          uri: https://www.baidu.com
+          predicates:
+            - Query=url,baidu
+        - id: qq-route
+          uri: https://www.qq.com
+          predicates:
+            - Query=url,qq
+        - id: product-route
+          uri: lb://gulimall-product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api(?<segment>/?.*), $\{segment}
+        - id: admin-route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**
+          filters:
+            - RewritePath=/api(?<segment>/?.*), /renren-fast$\{segment}
+          ## 前端项目都带上/api 保证路由到指定项目
+          # http://localhost:88/api/captcha.jpg   http://localhost:8080/renren-fast/captcha.jpg
